@@ -25,18 +25,18 @@ def load_resources():
     svd = joblib.load("Models/svd_model.pkl")
     # Load ratings data
     ratings = pd.read_parquet("data/clean/ratings_clean.parquet")
-    return movie_content, movie_similarity_df, svd, ratings
-
-movie_content, movie_similarity_df, svd, ratings = load_resources()
-
-if not hasattr(svd, 'trainset') or svd.trainset is None:
-    # We recreate the maps from your existing dataframes
-    user_map = {id: id for id in ratings['userId'].unique()}
-    item_map = {id: id for id in movie_content['movieId'].unique()}
-    global_mean = ratings['rating'].mean()
+    if not hasattr(svd, 'trainset') or svd.trainset is None:
+        # We recreate the maps from your existing dataframes
+        user_map = {id: id for id in ratings['userId'].unique()}
+        item_map = {id: id for id in movie_content['movieId'].unique()}
+        global_mean = ratings['rating'].mean()
     
     # Attach the Minimal version to the model
     svd.trainset = MinimalTrainset(user_map, item_map, global_mean)
+
+    return movie_content, movie_similarity_df, svd, ratings
+
+movie_content, movie_similarity_df, svd, ratings = load_resources()
 
 # converts movie IDs to titles and genres for display
 def movie_ids_to_titles(movie_ids):
