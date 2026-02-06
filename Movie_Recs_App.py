@@ -6,7 +6,11 @@ class MinimalTrainset:
         self._raw2inner_id_users = user_map
         self._raw2inner_id_items = item_map
         self.global_mean = global_mean
-        self._raw_ratings = []
+    def to_inner_uid(self, rid):
+        return self._raw2inner_id_users[rid]
+    
+    def to_inner_iid(self, rid):
+        return self._raw2inner_id_items[rid]
 
 # -------------------- Load Data & Models --------------------
 st.set_page_config(page_title="Hybrid Movie Recommender", layout="wide")
@@ -24,6 +28,15 @@ def load_resources():
     return movie_content, movie_similarity_df, svd, ratings
 
 movie_content, movie_similarity_df, svd, ratings = load_resources()
+
+if not hasattr(svd, 'trainset') or svd.trainset is None:
+    # We recreate the maps from your existing dataframes
+    user_map = {id: id for id in ratings['userId'].unique()}
+    item_map = {id: id for id in movies['id'].unique()}
+    global_mean = ratings['rating'].mean()
+    
+    # Attach the Minimal version to the model
+    svd.trainset = MinimalTrainset(user_map, item_map, global_mean)
 
 # converts movie IDs to titles and genres for display
 def movie_ids_to_titles(movie_ids):
