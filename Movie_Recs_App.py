@@ -1,4 +1,3 @@
-from matplotlib.pylab import svd
 import streamlit as st
 import pandas as pd
 import joblib
@@ -142,3 +141,4 @@ if st.button("Get Recommendations"):
             st.warning("⚠️ The selected movie is not available in the model. Try a different movie.")
         else: 
             st.dataframe(recommendations_df, use_container_width=True)
+
