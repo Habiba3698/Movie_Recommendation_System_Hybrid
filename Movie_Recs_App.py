@@ -32,7 +32,7 @@ movie_content, movie_similarity_df, svd, ratings = load_resources()
 if not hasattr(svd, 'trainset') or svd.trainset is None:
     # We recreate the maps from your existing dataframes
     user_map = {id: id for id in ratings['userId'].unique()}
-    item_map = {id: id for id in movies['id'].unique()}
+    item_map = {id: id for id in movie_content['movieId'].unique()}
     global_mean = ratings['rating'].mean()
     
     # Attach the Minimal version to the model
