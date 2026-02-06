@@ -6,18 +6,35 @@ class MinimalTrainset:
         self._raw2inner_id_users = user_map
         self._raw2inner_id_items = item_map
         self.global_mean = global_mean
+
+    # calls this first
+    def knows_user(self, rid):
+        try:
+            return int(rid) in self._raw2inner_id_users
+        except (ValueError, TypeError):
+            return False
+
+    # if it checks for the movie too
+    def knows_item(self, rid):
+        try:
+            return int(rid) in self._raw2inner_id_items
+        except (ValueError, TypeError):
+            return False
+
     def to_inner_uid(self, rid):
         try:
-            return self._raw2inner_id_users[int(rid)] # Force to int
+            return self._raw2inner_id_users[int(rid)]
         except (KeyError, ValueError):
             raise ValueError(f'User {rid} unknown')
     
     def to_inner_iid(self, rid):
         try:
-            return self._raw2inner_id_items[int(rid)] # Force to int
+            return self._raw2inner_id_items[int(rid)]
         except (KeyError, ValueError):
             raise ValueError(f'Item {rid} unknown')
-# -------------------- Load Data & Models --------------------
+
+# load our resources (dataframes and models) once and cache them
+        
 st.set_page_config(page_title="Hybrid Movie Recommender", layout="wide")
 st.title("🎥 Hybrid Movie Recommendation System")
 
