@@ -35,8 +35,8 @@ def load_resources():
         user_map = {id: id for id in ratings['userId'].unique()}
         item_map = {id: id for id in movie_content['movieId'].unique()}
         global_mean = ratings['rating'].mean()
-       # Attach the Minimal version to the model
-       svd.trainset = MinimalTrainset(user_map, item_map, global_mean)
+        # Attach the Minimal version to the model
+        svd.trainset = MinimalTrainset(user_map, item_map, global_mean)
 
     return movie_content, movie_similarity_df, svd, ratings
 
