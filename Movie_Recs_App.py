@@ -7,11 +7,16 @@ class MinimalTrainset:
         self._raw2inner_id_items = item_map
         self.global_mean = global_mean
     def to_inner_uid(self, rid):
-        return self._raw2inner_id_users[rid]
+        try:
+            return self._raw2inner_id_users[int(rid)] # Force to int
+        except (KeyError, ValueError):
+            raise ValueError(f'User {rid} unknown')
     
     def to_inner_iid(self, rid):
-        return self._raw2inner_id_items[rid]
-
+        try:
+            return self._raw2inner_id_items[int(rid)] # Force to int
+        except (KeyError, ValueError):
+            raise ValueError(f'Item {rid} unknown')
 # -------------------- Load Data & Models --------------------
 st.set_page_config(page_title="Hybrid Movie Recommender", layout="wide")
 st.title("🎥 Hybrid Movie Recommendation System")
@@ -30,9 +35,8 @@ def load_resources():
         user_map = {id: id for id in ratings['userId'].unique()}
         item_map = {id: id for id in movie_content['movieId'].unique()}
         global_mean = ratings['rating'].mean()
-    
-    # Attach the Minimal version to the model
-    svd.trainset = MinimalTrainset(user_map, item_map, global_mean)
+       # Attach the Minimal version to the model
+       svd.trainset = MinimalTrainset(user_map, item_map, global_mean)
 
     return movie_content, movie_similarity_df, svd, ratings
 
@@ -104,8 +108,8 @@ if st.button("Get Recommendations"):
                 svd_score = svd.predict(user_id, movie_id).est
                 
                 content_score = similar_to_liked.get(movie_id, 0)
-                
-                final_score = (0.7 * svd_score) + (0.3 * content_score)
+                # Normalizing SVD to a 0-1 scale so it matches content_score
+                final_score = (0.7 * (svd_score / 5)) + (0.3 * content_score)
                 scored_movies.append((movie_id, final_score))
 
             scored_movies.sort(key=lambda x: x[1], reverse=True)
